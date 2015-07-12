@@ -1,0 +1,13 @@
+#Ignore all compiled and project files
+# We only want to release the source files.
+
+.project
+.pydevproject
+*.pyc
+*~
+*.swp
+*.pyc
+*.pyd
+*.pycache
+# And all test related files;
+*test

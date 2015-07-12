@@ -2,3 +2,22 @@
 	master css to be implemented into the all pages;
 
 */
+
+body
+            {
+                /*background-color:#0F0F0F;*/
+                background-color:#FFFFFF;
+                color: #4f4f4f;
+                text-align: center;
+                /*color:rgb(193,191,191);*/
+    
+            }
+div
+            {
+                margin-top: 0px;
+                font-family: 'Julius Sans One', sans-serif;
+            }
+div a
+            {
+                text-decoration: none;    
+            }

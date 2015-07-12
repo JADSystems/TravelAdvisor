@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+
+<title> TrekTip </title>
+	<link href='http://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="/css/master.css">
+	
+	
+	
+</head>
+<body>
+	
+	<h1>Master Working;</h1>
+	<div id="main">
+		{% block body %}
+			<p> Nothing has been defined yet;</p>
+			
+		{% endblock %}
+		
+	</div>
+	<div>
+		<h4>
+			something | <a href="/userHome" target="_top" >userHome </a> | <a href="/default" target="_top" >Test</a>
+		</h4>
+	</div>
+	<div>
+		{{testP}}
+	</div>
+	
+	<!--  Loading libraries -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+</body>
+</html>

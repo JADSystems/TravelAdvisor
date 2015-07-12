@@ -16,10 +16,36 @@
 #
 import webapp2
 
+import jinja2;
+import os;
+#import MySQLdb;
+
+jinja_environment= jinja2.Environment(
+                                      
+    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)+"/templates"));
+
+dummyvalue="<p>dummy Paragraph</p>";
+template_values={
+                         
+             
+             'testP':dummyvalue
+             
+             };
+             
+             
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write('Hello world! Changed')
+        template=jinja_environment.get_template('default.html');
+        self.response.out.write(template.render(template_values));
 
+class UserHomeHandler(webapp2.RequestHandler):
+    def get(self):
+        template=jinja_environment.get_template('userHome.html');
+        self.response.out.write(template.render(template_values));
+        
+        
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/default', MainHandler),
+    ('/userHome', UserHomeHandler)
 ], debug=True)
