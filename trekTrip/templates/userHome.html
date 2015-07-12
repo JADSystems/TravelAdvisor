@@ -1,6 +1,8 @@
 {% extends "master.html"%}
 
 {%block body%}
-
+	<div>
+		<p>Hello {{firstName+ ' '+lastName}}</p> 
+	</div>
 	{{testP+'<h1>Inline Test</h1>'}}
 {%endblock%}

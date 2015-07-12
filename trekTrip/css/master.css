@@ -4,20 +4,37 @@
 */
 
 body
-            {
-                /*background-color:#0F0F0F;*/
-                background-color:#FFFFFF;
-                color: #4f4f4f;
-                text-align: center;
-                /*color:rgb(193,191,191);*/
-    
-            }
+{
+	/*background-color:#0F0F0F;*/
+	background-color:#FFFFFF;
+	color: #4f4f4f;
+	text-align: center;
+	/*color:rgb(193,191,191);*/
+
+}
 div
-            {
-                margin-top: 0px;
-                font-family: 'Julius Sans One', sans-serif;
-            }
+{
+    margin-top: 0px;
+    font-family: 'Julius Sans One', sans-serif;
+}
 div a
-            {
-                text-decoration: none;    
-            }
+{
+    text-decoration: none;    
+}
+            
+.backgroundImg
+{
+	position: absolute;
+	right: 0%;
+	top: -800px;
+	z-index: -1;
+	
+	
+}
+.loginForm
+{
+	position: absolute;
+	right: 0%;
+	top: 10%;
+	
+}

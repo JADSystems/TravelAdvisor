@@ -3,7 +3,8 @@
 
 create table Information
 (
-	ID INT NOT NULL UNIQUE,
+	ID INT NOT NULL AUTO_INCREMENT,
+    infoName varchar(50),
     infoType varchar(50),
     infoText varchar(500),
     image longblob,
@@ -13,19 +14,22 @@ create table Information
     
 );
 
-insert into Information (ID,infoType,infoText,image,video)
-values (0,'','','','');
-insert into Information (ID,infoType,infoText,image,video)
-values (1,'','','','');
+insert into Information (infoName,infoType,infoText,image,video)
+values ('dummy','','','','');
+insert into Information (infoName,infoType,infoText,image,video)
+values ('dummy2','','','','');
+insert into Information (infoName,infoType,infoText,image,video)
+values ('','','','','');
 
 
 create table Comment
 (
-	ID INT UNIQUE NOT NULL,
-    contentID INT UNIQUE,
+	ID INT NOT NULL AUTO_INCREMENT,
+    contentID INT ,
     rating INT,
     
-    foreign key(contentID) references Information(ID)
+    foreign key(contentID) references Information(ID),
+    Primary Key (ID)
 );
 
 insert into Comment( ID, contentID, rating)
@@ -35,8 +39,8 @@ create table Attraction
 (
 	ID int NOT NULL AUTO_INCREMENT,
     attractionName varchar(50) UNIQUE,
-    staticInfoID INT UNIQUE,
-    userInfoID INT UNIQUE,
+    staticInfoID INT ,
+    userInfoID INT ,
     
     
     primary key (ID),
@@ -44,20 +48,20 @@ create table Attraction
     foreign key(userInfoID) references Information(ID)
 );
 
-insert into Attraction(ID, attractionName,staticInfoID,userInfoID)
-values (0,'dummy',0,0);
+insert into Attraction(attractionName)
+values ('dummyAttraction1');
 
-insert into Attraction(ID, attractionName,staticInfoID,userInfoID)
-values (2,'dummy2',1,1);
+insert into Attraction(attractionName)
+values ('dummyAttraction2');
 
 create table Place
 (
-	ID int NOT NULL UNIQUE, 
+	ID int NOT NULL AUTO_INCREMENT, 
     placeType varchar(50),
     placeName varchar(50),
-    staticInfoID INT UNIQUE,
-    userInfoID INT UNIQUE,
-    attractionID INT unique,
+    staticInfoID INT,
+    userInfoID INT,
+    attractionID INT,
     
     primary key(ID),
     foreign key(staticInfoID) references Information(ID),
@@ -67,11 +71,11 @@ create table Place
     
 );
 
-insert into Place(ID, placeType, placeName, staticInfoID, userInfoID, attractionID)
-values (0,'','',0,0,1);
+insert into Place( placeType, placeName)
+values ('city','Miami');
 
-insert into Place(ID, placeType, placeName, staticInfoID, userInfoID, attractionID)
-values (1,'State','Florida',1,1,2);
+insert into Place( placeType, placeName)
+values ('state','Florida');
 
 create table User
 (
@@ -81,8 +85,8 @@ create table User
     firstName varchar(50) NOT NULL,
     lastName varchar(50) NOT NULL,
     passKey varchar(50) NOT NULL UNIQUE,
-    placeID INT UNIQUE,
-    commentID INT UNIQUE, 
+    placeID INT ,
+    commentID INT , 
     
 	PRIMARY KEY (ID),
     foreign key(placeID) references Place(ID),
@@ -90,7 +94,9 @@ create table User
 
 );
 
-insert into User (ID, userName, userType, firstName, lastName, passKey, placeID, commentID)
-values (1, 'root','admin','Bruce','Wayne','pass0',0,0);
+insert into User (userName, userType, firstName, lastName, passKey)
+values ('root','admin','Bruce','Wayne','pass0');
+insert into User (userName, userType, firstName, lastName, passKey)
+values ('test','admin','Jim','Gordon','pass1');
 
 commit;
