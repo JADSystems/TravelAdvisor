@@ -45,7 +45,7 @@ class MainHandler(webapp2.RequestHandler):
         if (env and env.startswith('Google App Engine/')):
             # Connecting from App Engine
             db = MySQLdb.connect(
-            unix_socket='/cloudsql/sacred-analyst-95419:miniprojectsql',
+            unix_socket='/cloudsql/trektip:trektipsql',
             user='root',passwd='TfReETO88zFyArUa65za');
         else:
             # Connecting from an external network.
