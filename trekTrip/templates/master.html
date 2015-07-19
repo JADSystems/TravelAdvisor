@@ -16,10 +16,15 @@
 	
 </head>
 <body>
-	
-	<h1>Master Working;</h1>
-	<div class="backgroundImg">
+<div class="backgroundImg">
 		{{backgroundImg}}
+	</div>
+	
+<div id="body">
+	
+	<h1>{{greetings + firstName + lastName}}</h1>
+	<div>
+		{{loginForm}}
 	</div>
 	<div id="main">
 		{% block body %}
@@ -30,7 +35,7 @@
 	</div>
 	<div>
 		<h4>
-			<a href="/userHome" target="_top" >userHome </a> | About | Attractions | <a href="/default" target="_top" >Travel</a>
+			<a href="/test" target="_top" >test </a> |<a href="/userHome" target="_top" >userHome </a> | About | Attractions | <a href="/default" target="_top" >Travel</a>
 		</h4>
 	</div>
 	<div>
@@ -39,5 +44,6 @@
 	
 	<!--  Loading libraries -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+</div>
 </body>
 </html>

@@ -3,23 +3,31 @@
 
 */
 
-body
+#body
 {
 	/*background-color:#0F0F0F;*/
-	background-color:#FFFFFF;
-	color: #4f4f4f;
+	margin: 2%;
+	padding: 1%;
+	background: rgba(255,255,255,.5);
+	color: #000000;
 	text-align: center;
 	/*color:rgb(193,191,191);*/
 
 }
 div
 {
-    margin-top: 0px;
+    
     font-family: 'Julius Sans One', sans-serif;
 }
 div a
 {
     text-decoration: none;    
+}
+
+#main
+{
+	
+	
 }
             
 .backgroundImg
@@ -34,7 +42,7 @@ div a
 .loginForm
 {
 	position: absolute;
-	right: 0%;
+	right: 5%;
 	top: 10%;
 	
 }
