@@ -1,15 +1,6 @@
 
 
-import webapp2
-
-import jinja2;
-import os,sys;
-import MySQLdb;
-from google.appengine.api import users
-from google.appengine.ext import blobstore
-from google.appengine.ext import ndb
-from google.appengine.ext.webapp import blobstore_handlers
-from gaesessions import get_current_session;
+from imports import *;
 
 # defining the jinja2 hook to utilize for accessing the templates;
 
@@ -19,63 +10,15 @@ jinja_environment= jinja2.Environment(
 
 # Defining globals;
 
-greetings= '';
-firstName='';
-lastName='';
-comments='';
-loginForm='''
-<div class="loginForm">
-    <form method ="post">
-        <label for="userName"> Username: </label>
-        <input name="userName" type="text" value="root"><br/>
-        <label for="password"> Password: </label>
-        <input name="password" type="text" value="pass0"> <br/>
-    <input name="loginButton" type="submit" value="Login">
-
-    </form>
-
-</div>
-
-'''
-logOut='''
-<form method ="post">
-    <input name="userName" type="hidden" value=" ">
-    <input name="logOutButton" type="submit" value="LogOut">
-</form>
-'''
-
-
-    
-    
-# defining default variable to go into template_values;
-dummyvalue="<p>dummy Paragraph</p>";
-defaultBackgroundImg='''
-<img src="/images/brooklynBridge0.jpg" >
-
-'''
-testText='';    # This string was produced to make tests and debugging from the DB;
-
-# defining the default template_values;
-
-template_values={
-                         
-             'firstName':'',
-             'lastName':'',
-             'testP':dummyvalue,
-             'greetings': greetings,
-             'loginForm':loginForm,
-             'comments':comments,
-             
-             
-             
-             };
-             
 #----------------------------------------------------------      
 def fetchCredentialsDB(web):
     # Web will be the variable self passed through to be used; 
-    global firstName,lastName;
+    global firstName,lastName,userName;
+    userName=web.request.get("userName");
     session=get_current_session();
-    userName=session.get('userName',' ');
+    userNameSession=session.get('userName',userName);
+    #if not (str(userNameSession).__contains__(userName)):
+    #    return False;
     password=session.get('password',' ');
     env = os.getenv('SERVER_SOFTWARE');
     if (env and env.startswith('Google App Engine/')):
@@ -93,12 +36,12 @@ def fetchCredentialsDB(web):
         passwd='TfReETO88zFyArUa65za');
     cursor=db.cursor();
     
-    #username=web.request.get("username");
+    
     #passKey=web.request.get("password");
     getUserName='''
         select trektip.User.userName from trektip.User
         where trektip.User.userName='%s';
-    '''%userName;
+    '''%userNameSession;
     cursor.execute(getUserName);
     userNameDB='';
     userNameDB+=str(cursor.fetchone());
@@ -117,7 +60,7 @@ def fetchCredentialsDB(web):
     getPassword='''
         select trektip.User.passKey from trektip.User
         where trektip.User.userName='%s';
-    '''%userName;
+    '''%userNameSession;
     cursor.execute(getPassword);
     passwordDB='';
 
@@ -168,30 +111,31 @@ def getComments(web):
     
     
     
-    
-    
-
-#----------------------------------------------------------
+def checkLogOut(web):
+    if fetchCredentialsDB(web)==False:
+            
+        session=get_current_session();
+        session['userName']=userName;
+        logInfo=str(session['userName']);
+        session.terminate()
+        template_values.update({'firstName':'','lastName':'','loginForm':loginForm, 'homeLink':'/default','testP':logInfo});
+        template_values.update({'backgroundImg':defaultBackgroundImg});
+        template=jinja_environment.get_template('default.html');
         
-class LoginHandler(webapp2.RequestHandler):
-    def get(self):
-        template=jinja_environment.get_template('testLogin.html');
-        self.response.out.write(template.render(template_values));            
-
+        #self.response.out.write(template.render(template_values));
+        #self.response=MainHandler(self);
+        web.redirect('/default');
+        return True; # if log out is strue, then that means we are logged out;
+    else:
+        return False;
 
 #----------------------------------------------------------
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        #fetchCredentialsDB(self) ;
-        logOutB=self.request.get('logOutButton');
-        #strB=str(logOutB);
         
-        if fetchCredentialsDB(self)==True:
-            loggedIn='Logged In';
-            template_values.update({'firstName':firstName,'lastName':lastName,'loginForm':logOut});
-        else:
-            template_values.update({'firstName':'','lastName':'','loginForm':loginForm});
+        template_values.update({'firstName':'','lastName':'','loginForm':loginForm, 'homeLink':'/default'});
+       
             
         template_values.update({'backgroundImg':defaultBackgroundImg});
         template=jinja_environment.get_template('default.html');
@@ -200,36 +144,40 @@ class MainHandler(webapp2.RequestHandler):
         
     def post(self):
         
-        logOutB=self.request.get('logOutButton');
-        #strB=str(logOutB);
         session=get_current_session();
-        userName=self.request.get('userName');
+        userName=self.request.get('userNameLogin');
         password=self.request.get('password');
         session['userName']=userName;
         session['password']=password;
         if fetchCredentialsDB(self)==True:
             loggedIn='';
-            template_values.update({'firstName':firstName,'lastName':lastName,'loginForm':logOut});
+            template_values.update({'firstName':firstName,'lastName':lastName,'backgroundImg':defaultBackgroundImg,'loginForm':logOut, 'homeLink':'/userHome'});
         else:
-            template_values.update({'testP':'Error in Credentials'});
+            template_values.update({'testP':'Error in Credentials', 'homeLink':'/default'});
             template=jinja_environment.get_template('default.html');
             self.response.out.write(template.render(template_values));
             return;
             
-        #template_values.update({'firstName':firstName,'lastName':lastName,'loginForm':loggedIn});
-        getComments(self);
-        template_values.update({'comments':comments});
-        template=jinja_environment.get_template('userHome.html');
-        self.response.out.write(template.render(template_values));
+        
+        self.redirect('/userHome');
 i=0;
 
 #----------------------------------------------------------        
 class TestHandler(webapp2.RequestHandler):
     
     def get(self):
+        
+        checkLogOut(self)
+            
         template=jinja_environment.get_template('test.html');
         self.response.out.write(template.render(template_values));
     def post(self):
+        
+        #Check if logOut. IF so, then go back to default.html
+        logOutButton=self.request.get('logOutButton');
+        if logOutButton=='ON':
+            loggedOut=checkLogOut(self);
+   
         env = os.getenv('SERVER_SOFTWARE')
         if (env and env.startswith('Google App Engine/')):
             # Connecting from App Engine
@@ -269,8 +217,8 @@ class TestHandler(webapp2.RequestHandler):
 #----------------------------------------------------------
 class UserHomeHandler(webapp2.RequestHandler):
     def get(self):
-        logOutB=self.request.get('logOutButton');
-        
+        #Check if logged on. If not, then go back to default.html
+        checkLogOut(self);
             
         getComments(self);
         template_values.update({'comments':comments});
@@ -279,18 +227,15 @@ class UserHomeHandler(webapp2.RequestHandler):
         
     def post(self):
         
-        #logOutB=self.request.get('logOutButton');
-        if fetchCredentialsDB(self)==True:
-            loggedIn='Logged In';
-            template_values.update({'firstName':firstName,'lastName':lastName,'loginForm':logOut});
+        #Check if logOut. IF so, then go back to default.html
+        logOutButton=self.request.get('logOutButton');
+        if logOutButton=='ON':
+            loggedOut=checkLogOut(self);
+            return;
+        else:
             getComments(self);
             template_values.update({'comments':comments});
             template=jinja_environment.get_template('userHome.html');
-            self.response.out.write(template.render(template_values));
-        else:
-            template_values.update({'firstName':'','lastName':'','loginForm':loginForm});
-            template_values.update({'backgroundImg':defaultBackgroundImg});
-            template=jinja_environment.get_template('default.html');
             self.response.out.write(template.render(template_values));
         
     
@@ -299,6 +244,5 @@ app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/default', MainHandler),
     ('/userHome', UserHomeHandler),
-    ('/test',TestHandler),
-    ('/login',LoginHandler)
+    ('/test',TestHandler)
 ], debug=True)
