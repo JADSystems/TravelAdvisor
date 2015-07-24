@@ -1,10 +1,45 @@
 {% extends "master.html"%}
 
+{% include 'header.html' %}
+{% include 'search.html' %}
+
 {%block body%}
-	<div>
-		<p>Hello {{firstName+ ' '+lastName}}</p> 
+<div id="userHome" class="userHome">
+		<div id="userLeftColumn" class="userLeftColumn">
+			<h1> Hello {{firstName+ ' '+lastName}}</h1>
+			Username: <div id=username class="informationBox">$Username</div><br/>
+			Email Address:<div id=email class="informationBox">$SomeEmail@emailco.com</div>
+			<br/><a href="/changePassword">Change Password</a>|<a href="/changeEmail">Change Email</a>
+			<h2>Upcoming Events</h2>
+			<div id="upcomingEvents" class="upcomingEvents">
+			<a href="/someEvent/">Event Number 1</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 2</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 3</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 4</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 5</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 6</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 7</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 8</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 9</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 10</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 11</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 12</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 13</a> <span class="tab"></span>08/30/2014<br/>
+			<a href="/someEvent/">Event Number 14</a> <span class="tab"></span>08/30/2014<br/>
+			</div>
+			
+			
+		</div>
+		<div id="userRightColumn" class="userRightColumn">
+			<h3>Comment History</h3>
+			<div id="commentHistory" class = "commentHistory">
+				<p>
+					{% for item in comments %}
+						<p> {{item}} </p>
+					{% endfor %}
+				</p>
+			</div>
+		</div>	
 	</div>
-	<div class="commentsContainer">
-		{{comments}}
-	</div>
+
 {%endblock%}

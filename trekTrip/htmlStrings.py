@@ -12,7 +12,7 @@ This is where the html string definitions are;
 # defining default variable to go into template_values;
 dummyvalue="<p>dummy Paragraph</p>";
 defaultBackgroundImg='''
-<img src="/images/brooklynBridge0.jpg" >
+<img src="/images/blank.jpg" >
 
 '''
 testText='';    # This string was produced to make tests and debugging from the DB;
@@ -26,17 +26,6 @@ lastName='';
 userName=' ';
 comments='';
 loginForm='''
-<div class="loginForm">
-    <form method ="post">
-        <label for="userName"> Username: </label>
-        <input name="userNameLogin" type="text" value="user"><br/>
-        <label for="password"> Password: </label>
-        <input name="password" type="text" value="pass"> <br/>
-    <input name="loginButton" type="submit" value="Login">
-
-    </form>
-
-</div>
 
 '''
 logOut='''

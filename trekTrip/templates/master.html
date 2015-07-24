@@ -6,41 +6,42 @@
 <title> TrekTip </title>
 	<link href='http://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" href="/css/master.css">
-    <link rel="stylesheet" href="/js/ammap/ammap.css" type="text/css">
-    <script src="/js/ammap/ammap.js" type="text/javascript"></script>
-    <!-- check ammap/maps/js/ folder to see all available countries -->
-    <!-- map file should be included after ammap.js -->
-	<script src="/js/ammap/maps/js/usa2Low.js" type="text/javascript"></script>
+  	
+  	{% block mapScripts %}
+  	{% endblock %}
 
 	
 	
 </head>
 <body>
-<div class="backgroundImg">
+{% block header %}
+{% endblock %}
+
+{% block loginDiv %}
+{% endblock %}
+
+{% block search %}
+{% endblock %}
+	<div class="backgroundImg">
 		{{backgroundImg}}
 	</div>
 	
 <div id="body">
 	
-	<h1>{{greetings + firstName + lastName}}</h1>
 	<div>
 		{{loginForm}}
 	</div>
-	<div id="main">
+	
+		{% block map %}
+				
+		{% endblock %}
+	
 		{% block body %}
-			<p> Nothing has been defined yet;</p>
+			
 			
 		{% endblock %}
-		
-	</div>
-	<div>
-		<h4>
-			<a href="/test" target="_top" >test </a>  | About | Attractions | <a href="{{homeLink}}" target="_top" >Home</a>
-		</h4>
-	</div>
-	<div>
-		{{testP}}
-	</div>
+
+
 	
 	<!--  Loading libraries -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>

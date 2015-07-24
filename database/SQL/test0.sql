@@ -4,6 +4,14 @@ SELECT * FROM trektip.Information;
 
 SELECT * FROM trektip.Comment;
 
+SELECT * FROM trektip.Attraction;
+
+select u.userName, p.placeName, a.ID, a.attractionName 
+from trektip.Attraction a, trektip.Place p, trektip.User u
+where u.userName='test'
+and p.userName='test'
+and a.placeName='Blue Note';
+
 SELECT distinct c.ID, c.rating, c.infoID, i.infoText
 FROM trektip.Comment c, trektip.User u, trektip.Information i
 where c.userName='root'

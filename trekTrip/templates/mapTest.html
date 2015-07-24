@@ -1,0 +1,23 @@
+
+{% block mapScripts %}
+		<script type="text/javascript"
+	      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqx4ERDM8Cnl6NjtjfIqdNv2KV-gdbG4Q">
+	    </script>
+	    <script type="text/javascript">
+	      function initialize() {
+	        var mapOptions = {
+	          center: { lat: 30.005475, lng: -90.166528},
+	          zoom: 3
+	        };
+	        var map = new google.maps.Map(document.getElementById('map-canvas'),
+	            mapOptions);
+	      }
+	      google.maps.event.addDomListener(window, 'load', initialize);
+	    </script>
+{% endblock %}
+
+{%block map%}
+	
+   	<div id="map-canvas"></div>
+	
+{%endblock%}

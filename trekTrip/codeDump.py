@@ -52,6 +52,21 @@ is being dumped for possible future use;
         #template_values.update({'comments':comments});
         #template=jinja_environment.get_template('userHome.html');
         #self.response.out.write(template.render(template_values));
+        
+        
+        
+        
+<div class="loginForm">
+    <form method ="post">
+        <label for="userName"> Username: </label>
+        <input name="userNameLogin" type="text" value="user"><br/>
+        <label for="password"> Password: </label>
+        <input name="password" type="text" value="pass"> <br/>
+    <input name="loginButton" type="submit" value="Login">
+
+    </form>
+
+</div>
 
 
 '''

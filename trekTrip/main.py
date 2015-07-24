@@ -1,7 +1,7 @@
 
 
 from imports import *;
-
+#import __init__;
 # defining the jinja2 hook to utilize for accessing the templates;
 
 jinja_environment= jinja2.Environment(
@@ -46,9 +46,20 @@ def fetchCredentialsDB(web):
     userNameDB='';
     userNameDB+=str(cursor.fetchone());
     if userNameDB.__contains__(userName):
-        
-        firstName=userNameDB+'firstName';
-        lastName=userNameDB+'lastName';
+        getfirstName='''
+        select trektip.User.firstName from trektip.User
+        where trektip.User.userName='%s';
+        '''%userNameSession;
+        cursor.execute(getfirstName);
+        firstName=str(cursor.fetchone());
+        firstName=firstName.translate(None,'''()@#,$\'''')
+        getlastName='''
+        select trektip.User.lastName from trektip.User
+        where trektip.User.userName='%s';
+        '''%userNameSession;
+        cursor.execute(getlastName);
+        lastName=str(cursor.fetchone());
+        lastName=lastName.translate(None,'''()@#,$\'''')
     else:
         
         return False;
@@ -104,9 +115,13 @@ def getComments(web):
         and c.ID=i.commentID;
     '''%(userName,userName);
     cursor.execute(getAllComments);
-    comments='<h2>COMMENTS</h2> <BR/>';
+    comments=[];
+    n=0;
     for r in cursor.fetchall():
-        comments+= str(r)+'<br/>';
+        #comments+= str(r)+'<br/>';
+        comments.append(str(r));
+        comments[n]=comments[n].translate(None,'''()@#,$\'''')
+        n=n+1;
     
     
     
@@ -139,7 +154,10 @@ class MainHandler(webapp2.RequestHandler):
             
         template_values.update({'backgroundImg':defaultBackgroundImg});
         template=jinja_environment.get_template('default.html');
+        #template=jinja_environment.get_template('mapTest.html');
+        #self.response.out.write(template.render(template_values));
         self.response.out.write(template.render(template_values));
+        
   
         
     def post(self):
@@ -237,12 +255,56 @@ class UserHomeHandler(webapp2.RequestHandler):
             template_values.update({'comments':comments});
             template=jinja_environment.get_template('userHome.html');
             self.response.out.write(template.render(template_values));
+#---------------------------------------------------------- 
+         
+class CreateAttractionHandler(webapp2.RequestHandler):
+    def get(self):
+        template=jinja_environment.get_template('attractionCreation.html');
+        self.response.out.write(template.render(template_values));
+#---------------------------------------------------------- 
+
+class LoginHandler(webapp2.RequestHandler):
+    def get(self):
+        template=jinja_environment.get_template('login.html');
+        self.response.out.write(template.render(template_values));
         
-    
+        
+    def post(self):
+        
+        session=get_current_session();
+        userName=self.request.get('userNameLogin');
+        password=self.request.get('password');
+        session['userName']=userName;
+        session['password']=password;
+        if fetchCredentialsDB(self)==True:
+            loggedIn='';
+            template_values.update({'firstName':firstName,'lastName':lastName,'backgroundImg':defaultBackgroundImg,'loginForm':logOut, 'homeLink':'/userHome'});
+        else:
+            template_values.update({'testP':'Error in Credentials', 'homeLink':'/default'});
+            template=jinja_environment.get_template('default.html');
+            #self.response.out.write(template.render(template_values));
+            self.redirect('/default');
+            return;
+            
+        
+        self.redirect('/userHome');
+#---------------------------------------------------------- 
+
+class RegisterHandler(webapp2.RequestHandler):
+    def get(self):
+        template=jinja_environment.get_template('register.html');
+        self.response.out.write(template.render(template_values));    
+        
 #----------------------------------------------------------       
+
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/default', MainHandler),
     ('/userHome', UserHomeHandler),
-    ('/test',TestHandler)
+    ('/test',TestHandler),
+    ('/userHome', UserHomeHandler),
+    ('/attractionCreation', CreateAttractionHandler),
+    ('/login',LoginHandler),
+    ('/register',RegisterHandler)
 ], debug=True)

@@ -91,6 +91,11 @@ values ('dummyAttraction2','Miami');
 insert into Attraction(attractionName,placeName)
 values ('dummyAttraction3','Miami');
 
+insert into Attraction(attractionName,placeName)
+values ('dummyAttraction Blue Note 1','Blue Note');
+
+insert into Attraction(attractionName,placeName)
+values ('dummyAttraction Blue Note 2','Blue Note');
 
 create table Information
 (
