@@ -20,7 +20,7 @@ create table User
 
 );
 
-insert into User (userName, userType, firstName, lastName, passKey)
+insert into trektip.User (userName, userType, firstName, lastName, passKey)
 values ('root','admin','Bruce','Wayne','pass0');
 insert into User (userName, userType, firstName, lastName, passKey)
 values ('test','admin','Jim','Gordon','pass1');

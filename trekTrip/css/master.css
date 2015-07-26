@@ -213,9 +213,10 @@ input.rounded:focus {
 }
 .MasterFooter
 {
-	
-	padding-top: 10px;
-	martin-top: 10px;
+	position: absolute;
+	right:35%;
+	bottom:0%;
+	z-index:1;
 }
 
 .roundedSelect
@@ -306,12 +307,18 @@ span.tab
     overflow-y: scroll;
 	
 }
+#logOutForm
+{
+	position:absolute;
+	right:5%;
+	top:5%;
+}
 #map-canvas
 {
-	height:50%;
-	width:50%;
+	height:60%;
+	width:60%;
 	position: absolute;
-	right:25%;
-	top:35%;
+	right:20%;
+	top:30%;
 	z-index:1;
 }

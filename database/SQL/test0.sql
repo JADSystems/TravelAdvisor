@@ -2,6 +2,11 @@ SELECT MAX(i.ID) FROM trektip.Information i;
 
 SELECT * FROM trektip.Information;
 
+SELECT * FROM trektip.User;
+
+delete from trektip.User
+where User.userName='';
+
 SELECT * FROM trektip.Comment;
 
 SELECT * FROM trektip.Attraction;

@@ -17,6 +17,8 @@ def fetchCredentialsDB(web):
     userName=web.request.get("userName");
     session=get_current_session();
     userNameSession=session.get('userName',userName);
+    if userNameSession=='' or userNameSession==' ' or userNameSession=='userName' or userNameSession==None:
+        return False;
     #if not (str(userNameSession).__contains__(userName)):
     #    return False;
     password=session.get('password',' ');
@@ -45,7 +47,8 @@ def fetchCredentialsDB(web):
     cursor.execute(getUserName);
     userNameDB='';
     userNameDB+=str(cursor.fetchone());
-    if userNameDB.__contains__(userName):
+    
+    if  userNameDB.__contains__(userName):
         getfirstName='''
         select trektip.User.firstName from trektip.User
         where trektip.User.userName='%s';
@@ -60,6 +63,7 @@ def fetchCredentialsDB(web):
         cursor.execute(getlastName);
         lastName=str(cursor.fetchone());
         lastName=lastName.translate(None,'''()@#,$\'''')
+        
     else:
         
         return False;
@@ -130,16 +134,16 @@ def checkLogOut(web):
     if fetchCredentialsDB(web)==False:
             
         session=get_current_session();
-        session['userName']=userName;
-        logInfo=str(session['userName']);
+        #session['userName']=userName;
+        #logInfo=str(session['userName']);
         session.terminate()
-        template_values.update({'firstName':'','lastName':'','loginForm':loginForm, 'homeLink':'/default','testP':logInfo});
+        template_values.update({'firstName':'','lastName':'','loginForm':loginForm, 'homeLink':'/default'});
         template_values.update({'backgroundImg':defaultBackgroundImg});
         template=jinja_environment.get_template('default.html');
         
         #self.response.out.write(template.render(template_values));
         #self.response=MainHandler(self);
-        web.redirect('/default');
+        #web.redirect('/default');
         return True; # if log out is strue, then that means we are logged out;
     else:
         return False;
@@ -148,6 +152,10 @@ def checkLogOut(web):
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
+        
+        if checkLogOut(self)==False:
+            self.redirect('/userHome');
+            return;
         
         template_values.update({'firstName':'','lastName':'','loginForm':loginForm, 'homeLink':'/default'});
        
@@ -185,7 +193,9 @@ class TestHandler(webapp2.RequestHandler):
     
     def get(self):
         
-        checkLogOut(self)
+        if checkLogOut(self)==True:
+            self.redirect('/default');
+            return;
             
         template=jinja_environment.get_template('test.html');
         self.response.out.write(template.render(template_values));
@@ -236,8 +246,9 @@ class TestHandler(webapp2.RequestHandler):
 class UserHomeHandler(webapp2.RequestHandler):
     def get(self):
         #Check if logged on. If not, then go back to default.html
-        checkLogOut(self);
-            
+        if checkLogOut(self)==True:
+            self.redirect('/default');
+            return;
         getComments(self);
         template_values.update({'comments':comments});
         template=jinja_environment.get_template('userHome.html');
@@ -249,6 +260,7 @@ class UserHomeHandler(webapp2.RequestHandler):
         logOutButton=self.request.get('logOutButton');
         if logOutButton=='ON':
             loggedOut=checkLogOut(self);
+            self.redirect('/default');
             return;
         else:
             getComments(self);
@@ -259,41 +271,117 @@ class UserHomeHandler(webapp2.RequestHandler):
          
 class CreateAttractionHandler(webapp2.RequestHandler):
     def get(self):
+        if checkLogOut(self)==True:
+            self.redirect('/default');
+            return;
         template=jinja_environment.get_template('attractionCreation.html');
         self.response.out.write(template.render(template_values));
+        
+        
+    def post(self):
+        #Check if logOut. IF so, then go back to default.html
+        logOutButton=self.request.get('logOutButton');
+        if logOutButton=='ON':
+            loggedOut=checkLogOut(self);
+            self.redirect('/default');
+            return;
+        
+        self.redirect('/userHome');
 #---------------------------------------------------------- 
 
 class LoginHandler(webapp2.RequestHandler):
     def get(self):
+        if checkLogOut(self)==False:
+            self.redirect('/userHome');
+            return;
         template=jinja_environment.get_template('login.html');
         self.response.out.write(template.render(template_values));
         
         
     def post(self):
         
-        session=get_current_session();
-        userName=self.request.get('userNameLogin');
-        password=self.request.get('password');
-        session['userName']=userName;
-        session['password']=password;
-        if fetchCredentialsDB(self)==True:
-            loggedIn='';
-            template_values.update({'firstName':firstName,'lastName':lastName,'backgroundImg':defaultBackgroundImg,'loginForm':logOut, 'homeLink':'/userHome'});
+        getLoginButton=self.request.get('loginButtonInput');
+        if getLoginButton=='ON':
+            session=get_current_session();
+            userName=self.request.get('userNameLogin');
+            password=self.request.get('password');
+            session['userName']=userName;
+            session['password']=password;
+            if fetchCredentialsDB(self)==True:
+                
+                template_values.update({'firstName':firstName,'lastName':lastName,'backgroundImg':defaultBackgroundImg,'loginForm':logOut, 'homeLink':'/userHome'});
+            else:
+                template_values.update({'testP':'Error in Credentials', 'homeLink':'/default'});
+                template=jinja_environment.get_template('default.html');
+                #self.response.out.write(template.render(template_values));
+                self.redirect('/default');
+                return;
+            self.redirect('/userHome');
         else:
-            template_values.update({'testP':'Error in Credentials', 'homeLink':'/default'});
-            template=jinja_environment.get_template('default.html');
-            #self.response.out.write(template.render(template_values));
+            # other button input to take in; 
+            # for the moment, default to back to default.html;
             self.redirect('/default');
-            return;
+        
             
         
-        self.redirect('/userHome');
+        
 #---------------------------------------------------------- 
 
 class RegisterHandler(webapp2.RequestHandler):
     def get(self):
+#         if checkLogOut(self)==False:
+#             self.redirect('/userHome');
+#             return;
         template=jinja_environment.get_template('register.html');
         self.response.out.write(template.render(template_values));    
+    
+    def post(self):
+        
+        getRegisterButtonInput=self.request.get('registerButtonInput');
+        if getRegisterButtonInput=='ON':
+            newFirstName=self.request.get('firstNameRegister');
+            newLastName=self.request.get('lastNameRegister');
+            newUserName=self.request.get('userNameRegister');
+            newEmail=self.request.get('email');
+            newPassword=self.request.get('passwordInput');
+            registerUser(newFirstName,newLastName,newUserName,newEmail,newPassword);
+            session=get_current_session();
+            session['userName']=newUserName;
+            session['password']=newPassword;
+            if fetchCredentialsDB(self)==True:
+                template_values.update({'firstName':firstName,'lastName':lastName,'backgroundImg':defaultBackgroundImg,'loginForm':logOut, 'homeLink':'/userHome'});
+            self.redirect('/userHome');
+        else:
+            self.redirect('/default');
+        
+        
+        
+def registerUser(fn,ln,un,e,p):
+    
+    env = os.getenv('SERVER_SOFTWARE');
+    if (env and env.startswith('Google App Engine/')):
+        # Connecting from App Engine
+        db = MySQLdb.connect(
+        unix_socket='/cloudsql/trektip:trektipsql',
+        user='root',passwd='TfReETO88zFyArUa65za');
+    else:
+        # Connecting from an external network.
+        # Make sure your network is whitelisted
+        db = MySQLdb.connect(
+        host='173.194.248.180',
+        port=3306,
+        user='root',
+        passwd='TfReETO88zFyArUa65za');
+    cursor=db.cursor();
+    putRegisterUserDB='''
+        insert into trektip.User (userName, userType, firstName, lastName, passKey)
+        values ('%s','user','%s','%s','%s');commit
+    '''%(un,fn,ln,p);
+    cursor.execute(putRegisterUserDB);
+    
+    
+        
+
         
 #----------------------------------------------------------       
 

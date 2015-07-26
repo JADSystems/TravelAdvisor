@@ -15,7 +15,7 @@ defaultBackgroundImg='''
 <img src="/images/blank.jpg" >
 
 '''
-testText='';    # This string was produced to make tests and debugging from the DB;
+testText='TEST TEXT ';    # This string was produced to make tests and debugging from the DB;
 
 # defining the default template_values;
 
@@ -23,7 +23,7 @@ homeLink='''/default''';
 greetings= '';
 firstName='';
 lastName='';
-userName=' ';
+userName='userName';
 comments='';
 loginForm='''
 
@@ -42,9 +42,9 @@ logOut='''
         //location.reload(); //reloading the page to have the changes iterated;
     }
     </script>
-    <form method ="post">
-        <input name="userName" type="text" value=" ">
-        <input name="logOutButton" type="text" value=" ">
+    <form method ="post" id="logOutForm"  >
+        <input name="userName" type="hidden" value=" ">
+        <input name="logOutButton" type="hidden" value=" ">
         <button  onclick="logOut()">logOut</button>
     </form>
 '''
@@ -59,6 +59,7 @@ template_values={
              'greetings': greetings,
              'loginForm':loginForm,
              'comments':comments,
+             'testText':testText
              
              
              

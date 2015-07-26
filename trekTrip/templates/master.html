@@ -20,8 +20,6 @@
 {% block loginDiv %}
 {% endblock %}
 
-{% block search %}
-{% endblock %}
 	<div class="backgroundImg">
 		{{backgroundImg}}
 	</div>
@@ -29,7 +27,7 @@
 <div id="body">
 	
 	<div>
-		{{loginForm}}
+		
 	</div>
 	
 		{% block map %}
@@ -46,5 +44,9 @@
 	<!--  Loading libraries -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 </div>
+{% include 'userNav.html'%}
+{% block userNav %}
+
+{% endblock %}
 </body>
 </html>
