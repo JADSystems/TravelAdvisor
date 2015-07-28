@@ -4,12 +4,54 @@ SELECT * FROM trektip.Information;
 
 SELECT * FROM trektip.User;
 
+commit;
+
+SELECT * FROM trektip.Place p
+where p.ID='13L';
+
+SELECT * FROM trektip.Attraction;
+
+insert into trektip.Attraction (attractionName,placeName,placeID,description)
+values ('%s','%s','%s','%s');
+
+insert into trektip.Attraction (attractionName,placeName,placeID,description)
+values ('JzzyParty','Blue Note','1L','This was Great jazz')
+where 
+
+alter table trektip.Attraction
+add column description varchar(150);
+
+alter table trektip.Attraction
+drop column attractionShortDesc;
+
+alter table trektip.Attraction
+drop column attractionLongDesc;
+
+SELECT distinct p.placeName, p.placeType,p.description
+FROM trektip.Place p, trektip.User u
+where p.userName='root';
+
+
+alter table trektip.Place
+drop column shortDesc;
+
+
+alter table trektip.Place
+drop column LongDesc;
+
+-- insert into trektip.Place (placeType, placeName,userName, latitude,longitude)
+-- values ('%s','%s','%s','%d','%d');
+
+insert into trektip.Place (placeType, placeName,userName, latitude,longitude,shortDesc)
+values ('Bar','BatBar2','root','10.322','3.2522','another bar on earth');
+
 delete from trektip.User
 where User.userName='';
 
 SELECT * FROM trektip.Comment;
 
-SELECT * FROM trektip.Attraction;
+SELECT * FROM trektip.Attraction a
+where a.ID='1L';
 
 select u.userName, p.placeName, a.ID, a.attractionName 
 from trektip.Attraction a, trektip.Place p, trektip.User u

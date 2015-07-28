@@ -1,10 +1,42 @@
 
-{% block mapScripts %}
+{% block defaultPlaceMapScripts %}
 		
 		<script type="text/javascript"
 	      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqx4ERDM8Cnl6NjtjfIqdNv2KV-gdbG4Q">
 	    </script>
 	    <script type="text/javascript">
+	    function testFunc()
+	    	{
+				var getLat=[];
+				var getLong=[];
+				var getPlaceID=[];
+				var getPlaceName=[];
+				
+				numberOfPlaces=Number({{lengthOfPlaces}});
+				{% for placeID in ID %}
+					getPlaceID.push('{{placeID}}');
+				{% endfor %}
+				{% for pn in placeName %}
+					getPlaceName.push('{{pn}}');
+				{% endfor %}
+				{% for lat in latitude %}
+					getLat.push(Number({{lat}}));
+				{% endfor %}
+				{% for long in longitude %}
+					getLong.push(Number({{long}}));
+				{% endfor %}
+				document.getElementById("AttractionTestDiv").innerHTML=getPlaceName;
+				var i=0;
+				var loc;
+				while (i<numberOfPlaces)
+				{
+					loc=new google.maps.LatLng(getLat[i], getLong[i]);
+					addMarker(loc,map);
+					
+					i++;
+				}
+	    	}
+	    
 	    
 	    // In the following example, markers appear when the user clicks on the map.
 		// Each marker is labeled with a single alphabetical character.
@@ -43,7 +75,8 @@
 		   
 		     	// This event listener calls addMarker() when the map is clicked.
   				google.maps.event.addListener(map, 'click', function(event) {
-    			addMarker(event.latLng, map);
+    			//addMarker(event.latLng, map);
+    			//testFunc();
   				});
 		        
 
@@ -71,19 +104,53 @@
 	             		
 	             		// Add a marker for geolocation
   						addMarker(initialLocation, map);
+  						
+  						
 	         		});   
 				 } 
 				 
 				 // Add a marker at the center of the map for default location
 				 else { addMarker(myLatlng1, map);
 			  	 }
+			  	 
+		  	 	var getLat=[];
+				var getLong=[];
+				var getPlaceID=[];
+				var getPlaceName=[];
+				
+				numberOfPlaces=Number({{lengthOfPlaces}});
+				{% for placeID in ID %}
+					getPlaceID.push('{{placeID}}');
+				{% endfor %}
+				{% for pn in placeName %}
+					getPlaceName.push('{{pn}}');
+				{% endfor %}
+				{% for lat in latitude %}
+					getLat.push(Number({{lat}}));
+				{% endfor %}
+				{% for long in longitude %}
+					getLong.push(Number({{long}}));
+				{% endfor %}
+				//document.getElementById("AttractionTestDiv").innerHTML=getPlaceName;
+				var i=0;
+				var loc;
+				while (i<numberOfPlaces)
+				{
+					loc=new google.maps.LatLng(getLat[i], getLong[i]);
+					addMarker(loc,map);
+					
+					i++;
+				}
 	        }
 	    	google.maps.event.addDomListener(window, 'load', initialize);
+	    	
+	    	
+	    	
 	    </script>
 
 {% endblock %}
 
-{%block map%}
+{%block defaultPlaceMap%}
 	
    	<div id="map-canvas"></div>
 	

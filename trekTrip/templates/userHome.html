@@ -5,12 +5,34 @@
 
 {%block body%}
 <div id="userHome" class="userHome">
+	<h1> Hello {{firstName+ ' '+lastName}}</h1>
 		<div id="userLeftColumn" class="userLeftColumn">
-			<h1> Hello {{firstName+ ' '+lastName}}</h1>
-			Username: <div id=username class="informationBox">$Username</div><br/>
-			Email Address:<div id=email class="informationBox">$SomeEmail@emailco.com</div>
-			<br/><a href="/changePassword">Change Password</a>|<a href="/changeEmail">Change Email</a>
-			<h2>Upcoming Events</h2>
+			
+			<div id="userHomeVenueContainer">
+			<h2>Your Venues</h2>
+			{% block userHomeMapScripts %}{%endblock%}
+			{% block userHomeMap %}{%endblock%}
+			{% include 'userHomeVenueMap.html' %}
+				<!-- <div id="placeNameDiv" style="float:left">
+					<h3>Name of Venue</h3>
+					{% for item in placeName %}
+						<p> {{item}} </p>
+					{% endfor %} 
+				</div>-->
+				<!-- <div id="placeTypeDiv" style="float:center">
+					{% for item in placeType %}
+						<p> {{item}} </p>
+					{% endfor %}
+				</div> 
+				<div id="placeDescriptionDiv" style="float:right">
+					<h3> Description</h3>
+					{% for item in description %}
+						<p> {{item}} </p>
+					{% endfor %}
+				</div>
+				-->
+			</div>
+			<!--  <h2>Upcoming Events</h2>
 			<div id="upcomingEvents" class="upcomingEvents">
 			<a href="/someEvent/">Event Number 1</a> <span class="tab"></span>08/30/2014<br/>
 			<a href="/someEvent/">Event Number 2</a> <span class="tab"></span>08/30/2014<br/>
@@ -27,12 +49,14 @@
 			<a href="/someEvent/">Event Number 13</a> <span class="tab"></span>08/30/2014<br/>
 			<a href="/someEvent/">Event Number 14</a> <span class="tab"></span>08/30/2014<br/>
 			</div>
-			
+			-->
 			
 		</div>
 		<div id="userRightColumn" class="userRightColumn">
-			<h3>Comment History</h3>
+			
+			<h2>Comment History</h2>
 			<div id="commentHistory" class = "commentHistory">
+				<p>ID, Rating, infoID, Text</p>
 				<p>
 					{% for item in comments %}
 						<p> {{item}} </p>

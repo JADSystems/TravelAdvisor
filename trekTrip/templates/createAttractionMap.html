@@ -1,0 +1,169 @@
+
+{% block createAttractionMapScripts %}
+		
+		<script type="text/javascript"
+	      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqx4ERDM8Cnl6NjtjfIqdNv2KV-gdbG4Q">
+	    </script>
+	    <script type="text/javascript">
+			 function createAttractionButtonInput()
+			{
+			    
+			    document.getElementsByName("createAttractionButton")[0].value="ON";
+			    
+			}
+	    
+	    function testFunc()
+	    	{
+				var getLat=[];
+				var getLong=[];
+				var getPlaceID=[];
+				var getPlaceName=[];
+				
+				numberOfPlaces=Number({{lengthOfPlaces}});
+				{% for placeID in ID %}
+					getPlaceID.push('{{placeID}}');
+				{% endfor %}
+				{% for pn in placeName %}
+					getPlaceName.push('{{pn}}');
+				{% endfor %}
+				{% for lat in latitude %}
+					getLat.push(Number({{lat}}));
+				{% endfor %}
+				{% for long in longitude %}
+					getLong.push(Number({{long}}));
+				{% endfor %}
+				document.getElementById("AttractionTestDiv").innerHTML=getPlaceName;
+				var i=0;
+				var loc;
+				while (i<numberOfPlaces)
+				{
+					loc=new google.maps.LatLng(getLat[i], getLong[i]);
+					addMarker(loc,map);
+					
+					i++;
+				}
+	    	}
+	    
+	    
+	    // In the following example, markers appear when the user clicks on the map.
+		// Each marker is labeled with a single alphabetical character.
+		var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		var labelIndex = 0;
+	    
+	      function initialize() {
+	        	var getLat=[];
+				var getLong=[];
+				var getPlaceID=[];
+				var getPlaceName=[];
+				
+				numberOfPlaces=Number({{lengthOfPlaces}});
+				{% for placeID in ID %}
+					getPlaceID.push('{{placeID}}');
+				{% endfor %}
+				{% for pn in placeName %}
+					getPlaceName.push('{{pn}}');
+				{% endfor %}
+				{% for lat in latitude %}
+					getLat.push(Number({{lat}}));
+				{% endfor %}
+				{% for long in longitude %}
+					getLong.push(Number({{long}}));
+				{% endfor %}
+		        //Set a default location if no geolocation
+		        var myLatlng1 = new google.maps.LatLng(26.824, -80.136);
+		        
+		        var mapOptions = {
+		          center: myLatlng1,
+		          mapTypeId: google.maps.MapTypeId.ROADMAP,
+		          zoom: 8
+		        };
+		        
+		        var map = new google.maps.Map(document.getElementById('attractionCreation-map-canvas'), mapOptions);
+		        
+		        var contentString='';  
+				    
+				var infowindow = new google.maps.InfoWindow({
+      				content: contentString
+  				});
+		   		
+		     	// This event listener calls addMarker() when the map is clicked.
+  				google.maps.event.addListener(map, 'click', function(event) {
+    			//addMarker(event.latLng, map);
+    			//testFunc();
+  				});
+		        
+
+  				// Adds a marker to the map.
+				function addMarker(location, map,venueName, venueID) {
+	  				
+		  			// Add the marker at the clicked location, and add the next-available label
+		  			// from the array of alphabetical characters.
+		  			var contentString = '<div id="content">'+
+					'<div id="siteNotice">'+
+				    '</div>'+
+				    '<h1 id="firstHeading" class="firstHeading">ID: '+venueID+' '+venueName+'</h1>'+
+				    '<div id="bodyContent">'+
+				    '<form method ="post" id="attractionCreationForm"  style="text-align:left">'+
+				       '<input name="attractionName" type="text"  placeholder="Name"><br/>'+
+				       '<input name="attractionDescription" type="text" placeholder="Description"><br/>'+
+				       '<input name="attractionPlaceName" type="hidden" value="'+venueName+'">'+
+				       '<input name="attractionPlaceID" type="hidden" value="'+venueID+'">'+
+				       '<input name="createAttractionButton" type="hidden" value="OFF">'+
+				       '<button  onclick="createAttractionButtonInput()">Create Event</button>'+
+				    '</form>'+
+				    '</div>'+
+				    '</div>';
+		  			var marker = new google.maps.Marker({
+			    		position: location,
+			    		label: labels[labelIndex++ % labels.length],
+			    		map: map
+	  					});
+	  					
+	  					google.maps.event.addListener(marker, 'click', function() {
+    					infowindow.content=contentString;
+    					infowindow.open(map,marker);
+  						});
+  					
+  					
+  					}
+	  							            
+		        //If geolocation is available, center on map and add a marker		        
+		        if (navigator.geolocation) {
+	         		navigator.geolocation.getCurrentPosition(function (position) {
+	             		initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+	             		map.setCenter(initialLocation);
+	             		
+	             		// Add a marker for geolocation
+  						addMarker(initialLocation, map);
+  						
+  						
+	         		});   
+				 } 
+				 
+				 // Add a marker at the center of the map for default location
+				 else { addMarker(myLatlng1, map);
+			  	 }
+			  	 
+		  	 	
+				//document.getElementById("AttractionTestDiv").innerHTML=getPlaceName;
+				var i=0;
+				var loc;
+				while (i<numberOfPlaces)
+				{
+					loc=new google.maps.LatLng(getLat[i], getLong[i]);
+					addMarker(loc,map,getPlaceName[i],getPlaceID[i]);// pass in loc, map, name, description,
+					
+					i++;
+				}
+	        }
+	    	google.maps.event.addDomListener(window, 'load', initialize);
+
+	    </script>
+
+{% endblock %}
+
+{%block createAttractionMap%}
+	
+   	<div id="attractionCreation-map-canvas"></div>
+	
+{%endblock%}

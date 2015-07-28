@@ -1,11 +1,14 @@
 
-{% block mapScripts %}
+{% block venueCreationMapScript %}
 		
 		<script type="text/javascript"
 	      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqx4ERDM8Cnl6NjtjfIqdNv2KV-gdbG4Q">
 	    </script>
 	    <script type="text/javascript">
-	    
+	    function getVenueCreationButton()
+	    {
+	    	document.getElementsByName("venueCreationInputButton")[0].value="ON";
+	    }
 	    // In the following example, markers appear when the user clicks on the map.
 		// Each marker is labeled with a single alphabetical character.
 		var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -27,12 +30,17 @@
 		        var contentString = '<div id="content">'+
 					'<div id="siteNotice">'+
 				    '</div>'+
-				    '<h1 id="firstHeading" class="firstHeading">My City {{testText}}</h1>'+
+				    '<h1 id="firstHeading" class="firstHeading">Insert {{testText}}</h1>'+
 				    '<div id="bodyContent">'+
-				    '<form method="post">'+
-						'<input name="placeName1" type="hidden" value=" ">'+
-						'<input name="placeButton1" type="hidden" value=" ">'+
-						'<button  onclick="">placeReg</button>'+
+				    '<form method="post" style="text-align:left">'+
+				    	'<input name="venueName"  type="text" placeholder="VenueName"> <br/>'+
+						'<select name ="venueType" placeholder="type"><option>Bar</option><option>Restaurant</option><option>Club</option></select> <br/>'+
+						'<input name="venueDescription" type="text" rows="2" cols="25" placeholder="Description" value=" "> <br/>'+
+						'<input name="venueGoogleId" type="hidden" value="nothing">'+
+						'<input name="venueLat" type="hidden" value=" ">'+
+						'<input name="venueLong" type="hidden" value=" ">'+
+						'<input name="venueCreationInputButton" type="hidden" value="OFF">'+
+						'<button  onclick="getVenueCreationButton()">Register Venue</button>'+
 					'</form>'+
 				    '</div>'+
 				    '</div>';
@@ -43,7 +51,9 @@
 		   
 		     	// This event listener calls addMarker() when the map is clicked.
   				google.maps.event.addListener(map, 'click', function(event) {
+  				//document.getElementsByName("venueGoogleId")[0].value=event.latLng;
     			addMarker(event.latLng, map);
+    			
   				});
 		        
 
@@ -60,7 +70,10 @@
 	  					
 	  					google.maps.event.addListener(marker, 'click', function() {
     					infowindow.open(map,marker);
+    					document.getElementsByName("venueLat")[0].value=location.lat();
+    					document.getElementsByName("venueLong")[0].value=location.lng();
   						});
+					
   					}
 	  							            
 		        //If geolocation is available, center on map and add a marker		        
@@ -83,7 +96,7 @@
 
 {% endblock %}
 
-{%block map%}
+{%block venueCreationMap%}
 	
    	<div id="map-canvas"></div>
 	

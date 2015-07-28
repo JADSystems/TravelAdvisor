@@ -15,7 +15,7 @@ defaultBackgroundImg='''
 <img src="/images/blank.jpg" >
 
 '''
-testText='TEST TEXT ';    # This string was produced to make tests and debugging from the DB;
+testText='Venue Info ';    # This string was produced to make tests and debugging from the DB;
 
 # defining the default template_values;
 
@@ -25,8 +25,12 @@ firstName='';
 lastName='';
 userName='userName';
 comments='';
+venues='';
 loginForm='''
-
+'''
+venueCreationForm='<p>test venueCreationForm</p>';
+testString2='''
+            
 '''
 logOut='''
     
@@ -59,7 +63,9 @@ template_values={
              'greetings': greetings,
              'loginForm':loginForm,
              'comments':comments,
-             'testText':testText
+             'testText':testText,
+             'venueCreationForm':venueCreationForm,
+             'venues':venues
              
              
              

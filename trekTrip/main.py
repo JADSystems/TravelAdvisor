@@ -63,6 +63,7 @@ def fetchCredentialsDB(web):
         cursor.execute(getlastName);
         lastName=str(cursor.fetchone());
         lastName=lastName.translate(None,'''()@#,$\'''')
+        userName=userNameDB.translate(None,'''()@#,$\'''');
         
     else:
         
@@ -126,8 +127,62 @@ def getComments(web):
         comments.append(str(r));
         comments[n]=comments[n].translate(None,'''()@#,$\'''')
         n=n+1;
+    template_values.update({'comments':comments});
+#----------------------------------------------------------
+
+def getVenues(web):
+    global venues;
+    session=get_current_session();
+    userName=session.get('userName',' ');
+    env = os.getenv('SERVER_SOFTWARE');
+    if (env and env.startswith('Google App Engine/')):
+        # Connecting from App Engine
+        db = MySQLdb.connect(
+        unix_socket='/cloudsql/trektip:trektipsql',
+        user='root',passwd='TfReETO88zFyArUa65za');
+    else:
+        # Connecting from an external network.
+        # Make sure your network is whitelisted
+        db = MySQLdb.connect(
+        host='173.194.248.180',
+        port=3306,
+        user='root',
+        passwd='TfReETO88zFyArUa65za');
+    cursor=db.cursor();
+      
+    venueColumn=['ID','placeName','latitude','longitude','description'];
+    j=0;
+    venues={};
+    while j<len(venueColumn):
+        venues.update({venueColumn[j]:[]});
+        j=j+1;
+    
+    j=0;
+    while j<len(venueColumn):
+        getAllVenues='''
+        SELECT distinct p.%s
+        FROM trektip.Place p, trektip.User u
+        where p.userName='%s';
+    '''%(venueColumn[j],userName);
+        cursor.execute(getAllVenues);
+        n=0;
+        for v in cursor.fetchall():
+            #venues+= str(v)+'<br/>';
+            venues.get(venueColumn[j]).append((str(v)).translate(None,'''()@#,$\''''));
+            #venues.get(venueColumn[j])[n].append(str(v));
+            #venues.get(venueColumn[j])[n]=venues.get(venueColumn[j])[n].translate(None,'''()@#,$\'''')
+            #n=n+1;
+        template_values.update({venueColumn[j]:venues.get(venueColumn[j])}); 
+        j=j+1;  
+    lengthOfPlaces=len(venues.get(venueColumn[0]));
+    template_values.update({'lengthOfPlaces':lengthOfPlaces});
     
     
+    
+    
+    
+     
+    #template_values.update({'venues':venues});
     
     
 def checkLogOut(web):
@@ -170,6 +225,7 @@ class MainHandler(webapp2.RequestHandler):
         
     def post(self):
         
+        #divText=self.request.get('id:testDiv');
         session=get_current_session();
         userName=self.request.get('userNameLogin');
         password=self.request.get('password');
@@ -250,7 +306,9 @@ class UserHomeHandler(webapp2.RequestHandler):
             self.redirect('/default');
             return;
         getComments(self);
-        template_values.update({'comments':comments});
+        getVenues(self);
+        #template_values.update({'venues':venues});
+        #template_values.update({'comments':comments});
         template=jinja_environment.get_template('userHome.html');
         self.response.out.write(template.render(template_values));
         
@@ -269,11 +327,46 @@ class UserHomeHandler(webapp2.RequestHandler):
             self.response.out.write(template.render(template_values));
 #---------------------------------------------------------- 
          
-class CreateAttractionHandler(webapp2.RequestHandler):
+class CreateVenueHandler(webapp2.RequestHandler):
     def get(self):
         if checkLogOut(self)==True:
             self.redirect('/default');
             return;
+        template=jinja_environment.get_template('venueCreation.html');
+        self.response.out.write(template.render(template_values));
+        
+        
+    def post(self):
+        #Check if logOut. IF so, then go back to default.html
+        logOutButton=self.request.get('logOutButton');
+        if logOutButton=='ON':
+            loggedOut=checkLogOut(self);
+            self.redirect('/default');
+            return;
+        venueCreationButton=self.request.get('venueCreationInputButton');
+        if venueCreationButton=='ON':
+            global userName;
+            newVenueName=self.request.get('venueName');
+            newVenueType=self.request.get('venueType');
+            newVenueLat=self.request.get('venueLat');
+            newVenueLong=self.request.get('venueLong');
+            newVenueDescription=self.request.get('venueDescription');
+            registerVenue(newVenueType,newVenueName,userName,newVenueLat,newVenueLong,newVenueDescription);
+            self.redirect('/userHome');
+            return;
+        
+        self.redirect('/userHome');
+#---------------------------------------------------------- 
+
+#---------------------------------------------------------- 
+         
+class CreateAttractionHandler(webapp2.RequestHandler):
+    def get(self):
+        global venues;
+        if checkLogOut(self)==True:
+            self.redirect('/default');
+            return;
+        
         template=jinja_environment.get_template('attractionCreation.html');
         self.response.out.write(template.render(template_values));
         
@@ -285,6 +378,16 @@ class CreateAttractionHandler(webapp2.RequestHandler):
             loggedOut=checkLogOut(self);
             self.redirect('/default');
             return;
+        createAttractionButton=self.request.get('createAttractionButton');
+        if createAttractionButton=='ON':
+            newAttractionName=self.request.get('attractionName');
+            newAttractionDescription=self.request.get('attractionDescription');
+            newAttractionPlaceName=self.request.get('attractionPlaceName');
+            newAttractionPlaceID=self.request.get('attractionPlaceID');
+            registerAttraction(newAttractionName, newAttractionPlaceName, newAttractionPlaceID, newAttractionDescription);
+            self.redirect('/userHome');
+            return;
+            
         
         self.redirect('/userHome');
 #---------------------------------------------------------- 
@@ -379,11 +482,61 @@ def registerUser(fn,ln,un,e,p):
     '''%(un,fn,ln,p);
     cursor.execute(putRegisterUserDB);
     
+#----------------------------------------------------------  
     
-        
+def registerVenue(vt,vn,un,lat,long,descriptionText):
+    
+    env = os.getenv('SERVER_SOFTWARE');
+    if (env and env.startswith('Google App Engine/')):
+        # Connecting from App Engine
+        db = MySQLdb.connect(
+        unix_socket='/cloudsql/trektip:trektipsql',
+        user='root',passwd='TfReETO88zFyArUa65za');
+    else:
+        # Connecting from an external network.
+        # Make sure your network is whitelisted
+        db = MySQLdb.connect(
+        host='173.194.248.180',
+        port=3306,
+        user='root',
+        passwd='TfReETO88zFyArUa65za');
+    cursor=db.cursor();
+    putRegisterVenueDB='''
+        insert into trektip.Place (placeType, placeName,userName, latitude,longitude,description)
+        values ('%s','%s','%s','%s','%s','%s');commit
+    '''%(vt,vn,un,lat,long,descriptionText);
+    cursor.execute(putRegisterVenueDB);        
 
         
-#----------------------------------------------------------       
+#----------------------------------------------------------      
+
+def registerAttraction(an,pn,pID,ad):
+    
+    env = os.getenv('SERVER_SOFTWARE');
+    if (env and env.startswith('Google App Engine/')):
+        # Connecting from App Engine
+        db = MySQLdb.connect(
+        unix_socket='/cloudsql/trektip:trektipsql',
+        user='root',passwd='TfReETO88zFyArUa65za');
+    else:
+        # Connecting from an external network.
+        # Make sure your network is whitelisted
+        db = MySQLdb.connect(
+        host='173.194.248.180',
+        port=3306,
+        user='root',
+        passwd='TfReETO88zFyArUa65za');
+    cursor=db.cursor();
+    putRegisterAttractionDB='''
+        insert into trektip.Attraction (attractionName,placeName,placeID,description)
+        values ('%s','%s','%s','%s');commit
+    '''%(an,pn,pID,ad);
+    #cursor.close();
+    cursor.execute(putRegisterAttractionDB);
+    cursor.close();
+
+        
+#----------------------------------------------------------    
 
 
 app = webapp2.WSGIApplication([
@@ -392,7 +545,8 @@ app = webapp2.WSGIApplication([
     ('/userHome', UserHomeHandler),
     ('/test',TestHandler),
     ('/userHome', UserHomeHandler),
-    ('/attractionCreation', CreateAttractionHandler),
+    ('/venueCreation', CreateVenueHandler),
     ('/login',LoginHandler),
-    ('/register',RegisterHandler)
+    ('/register',RegisterHandler),
+    ('/attractionCreation',CreateAttractionHandler)
 ], debug=True)
