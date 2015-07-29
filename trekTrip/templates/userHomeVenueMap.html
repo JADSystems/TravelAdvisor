@@ -5,37 +5,7 @@
 	      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqx4ERDM8Cnl6NjtjfIqdNv2KV-gdbG4Q">
 	    </script>
 	    <script type="text/javascript">
-	    function testFunc()
-	    	{
-				var getLat=[];
-				var getLong=[];
-				var getPlaceID=[];
-				var getPlaceName=[];
-				
-				numberOfPlaces=Number({{lengthOfPlaces}});
-				{% for placeID in ID %}
-					getPlaceID.push('{{placeID}}');
-				{% endfor %}
-				{% for pn in placeName %}
-					getPlaceName.push('{{pn}}');
-				{% endfor %}
-				{% for lat in latitude %}
-					getLat.push(Number({{lat}}));
-				{% endfor %}
-				{% for long in longitude %}
-					getLong.push(Number({{long}}));
-				{% endfor %}
-				document.getElementById("AttractionTestDiv").innerHTML=getPlaceName;
-				var i=0;
-				var loc;
-				while (i<numberOfPlaces)
-				{
-					loc=new google.maps.LatLng(getLat[i], getLong[i]);
-					addMarker(loc,map);
-					
-					i++;
-				}
-	    	}
+	    
 	    
 	    
 	    // In the following example, markers appear when the user clicks on the map.
@@ -48,6 +18,25 @@
 				var getLong=[];
 				var getPlaceID=[];
 				var getPlaceName=[];
+				
+				var getattractionID=[];
+				var getattractionName=[];
+				var getattractionPlaceID=[];
+				var getattractionDescription=[];
+				
+				numberOfAttractions=Number({{lengthOfAttractions}});
+				{% for attractionid in attractionID %}
+					getattractionID.push('{{attractionid}}');
+				{% endfor %}
+				{% for pn in attractionattractionName %}
+					getattractionName.push('{{pn}}');
+				{% endfor %}
+				{% for lat in attractionplaceID %}
+					getattractionPlaceID.push('{{lat}}');
+				{% endfor %}
+				{% for long in attractiondescription %}
+					getattractionDescription.push('{{long}}');
+				{% endfor %}
 				
 				numberOfPlaces=Number({{lengthOfPlaces}});
 				{% for placeID in ID %}
@@ -98,7 +87,7 @@
 		        
 
   				// Adds a marker to the map.
-				function addMarker(location, map,venueName) {
+				function addMarker(location, map,venueName,attractionName,attractionDescription) {
 	  				
 		  			// Add the marker at the clicked location, and add the next-available label
 		  			// from the array of alphabetical characters.
@@ -107,7 +96,12 @@
 				    '</div>'+
 				    '<h1 id="firstHeading" class="firstHeading"> '+venueName+'</h1>'+
 				    '<div id="bodyContent">'+
-				    
+				    '<table>'+
+				    '<tr>'+
+				    '<td>'+attractionName+'</td>'+
+				    '<td>'+attractionDescription+'</td>'+
+				    '</tr>'+
+				    '</table>'+
 				    '</div>'+
 				    '</div>';
 				    
@@ -134,25 +128,49 @@
 	             		map.setCenter(initialLocation);
 	             		
 	             		// Add a marker for geolocation
-  						addMarker(initialLocation, map);
+  						//addMarker(initialLocation, map,'','');
   						
   						
 	         		});   
 				 } 
 				 
 				 // Add a marker at the center of the map for default location
-				 else { addMarker(myLatlng1, map);
+				 else { addMarker(myLatlng1, map,'','');
 			  	 }
 			  	 
 		  	 	
 				//document.getElementById("AttractionTestDiv").innerHTML=getPlaceName;
 				var i=0;
 				var loc;
+				var j=0;
+				var attName='';
+				var attDesc='';
 				while (i<numberOfPlaces)
 				{
+					j=0;
+					attName='';
+					attDesc='';
+					while (j<numberOfAttractions)
+					{
+						console.log(j);
+						console.log(getattractionPlaceID[j]+'=='+getPlaceID[i]);
+						if (getattractionPlaceID[j]==getPlaceID[i])
+						{
+							console.log(getattractionPlaceID[j]+'=='+getPlaceID[i]);
+							attName=attName+getattractionName[j]+'<br/><hr>';
+							console.log(attName);
+							attDesc=attDesc+getattractionDescription[j]+'<br/><hr>';
+							console.log('attDesc: '+attDesc);
+							j++;
+						}
+						else
+						{
+							j++;
+						}
+					}
 					loc=new google.maps.LatLng(getLat[i], getLong[i]);
-					addMarker(loc,map,getPlaceName[i]);// pass in loc, map, name, description,
-					
+					addMarker(loc,map,getPlaceName[i],attName,attDesc);// pass in loc, map, name, description,
+					console.log("i: " +i);
 					i++;
 				}
 	        }

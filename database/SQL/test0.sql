@@ -2,6 +2,9 @@ SELECT MAX(i.ID) FROM trektip.Information i;
 
 SELECT * FROM trektip.Information;
 
+
+SELECT * FROM trektip.Place;
+
 SELECT * FROM trektip.User;
 
 commit;
@@ -30,6 +33,9 @@ drop column attractionLongDesc;
 SELECT distinct p.placeName, p.placeType,p.description
 FROM trektip.Place p, trektip.User u
 where p.userName='root';
+
+SELECT  a.placeName 
+from trektip.Attraction a;
 
 
 alter table trektip.Place

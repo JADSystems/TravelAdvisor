@@ -10,6 +10,49 @@ jinja_environment= jinja2.Environment(
 
 # Defining globals;
 
+#----------------------------------------------------------
+def search(web, searchval, searchlat, searchlng):
+
+    env = os.getenv('SERVER_SOFTWARE');
+    if (env and env.startswith('Google App Engine/')):
+        # Connecting from App Engine
+        db = MySQLdb.connect(
+        unix_socket='/cloudsql/trektip:trektipsql',
+        user='root',passwd='TfReETO88zFyArUa65za',
+        db='trektip');
+    else:
+        # Connecting from an external network.
+        # Make sure your network is whitelisted
+        db = MySQLdb.connect(
+        host='173.194.248.180',
+        port=3306,
+        user='root',
+        passwd='TfReETO88zFyArUa65za',
+        db='trektip');
+    
+    cursor=db.cursor();
+    if searchval != '123':
+        searchQuery='CALL search_attr(' + searchlat +',' + searchlng +',' + searchval+');';
+    else:
+        searchQuery='CALL search_loc(' + searchlat +',' + searchlng+');';
+    cursor.execute(searchQuery);
+    resultSet=[];
+    n=0;
+    for r in cursor.fetchall():
+        resultSet.append(str(r))
+        resultSet[n]=resultSet[n].translate(None,'''()@#,$\'''');
+        resultSet[n]=resultSet[n] + "<br />"; 
+        n=n+1;
+    
+    resultValues="";
+        
+    for i in range(len(resultSet)):
+        resultValues+=resultSet[i];
+    template_values.update({'searchResult':resultValues});
+    return;
+    
+
+
 #----------------------------------------------------------      
 def fetchCredentialsDB(web):
     # Web will be the variable self passed through to be used; 
@@ -179,12 +222,55 @@ def getVenues(web):
     
     
     
+#----------------------------------------------------------
+
+def getAttractions(web):
+    global venues;
+    session=get_current_session();
+    userName=session.get('userName',' ');
+    env = os.getenv('SERVER_SOFTWARE');
+    if (env and env.startswith('Google App Engine/')):
+        # Connecting from App Engine
+        db = MySQLdb.connect(
+        unix_socket='/cloudsql/trektip:trektipsql',
+        user='root',passwd='TfReETO88zFyArUa65za');
+    else:
+        # Connecting from an external network.
+        # Make sure your network is whitelisted
+        db = MySQLdb.connect(
+        host='173.194.248.180',
+        port=3306,
+        user='root',
+        passwd='TfReETO88zFyArUa65za');
+    cursor=db.cursor();
+      
+    attractionColumn=['ID','attractionName','placeID','description'];
+    j=0;
+    attractions={};
+    while j<len(attractionColumn):
+        attractions.update({attractionColumn[j]:[]});
+        j=j+1;
     
+    j=0;
+    while j<len(attractionColumn):
+        getAllAttractions='''
+        SELECT  a.%s
+        from trektip.Attraction a;
+    '''%(attractionColumn[j]);
+        cursor.execute(getAllAttractions);
+        n=0;
+        for v in cursor.fetchall():
+            #venues+= str(v)+'<br/>';
+            attractions.get(attractionColumn[j]).append((str(v)).translate(None,'''()@#,$\''''));
+            #venues.get(venueColumn[j])[n].append(str(v));
+            #venues.get(venueColumn[j])[n]=venues.get(venueColumn[j])[n].translate(None,'''()@#,$\'''')
+            #n=n+1;
+        template_values.update({'attraction'+attractionColumn[j]:attractions.get(attractionColumn[j])}); 
+        j=j+1;  
+    lengthOfAttractions=len(attractions.get(attractionColumn[0]));
+    template_values.update({'lengthOfAttractions':lengthOfAttractions});
     
-     
-    #template_values.update({'venues':venues});
-    
-    
+#----------------------------------------------------------    
 def checkLogOut(web):
     if fetchCredentialsDB(web)==False:
             
@@ -225,6 +311,15 @@ class MainHandler(webapp2.RequestHandler):
         
     def post(self):
         
+         #Check if Search, if so.. perform search
+        searchButton=self.request.get("searchButtonInput")
+        lat=self.request.get("searchLat");
+        lng=self.request.get("searchLng");
+        searchVal=self.request.get("searchVal");
+        if searchButton == 'ON':
+            search(self, searchVal,lat,lng);
+            self.redirect('/searchHome');
+            return;
         #divText=self.request.get('id:testDiv');
         session=get_current_session();
         userName=self.request.get('userNameLogin');
@@ -307,6 +402,7 @@ class UserHomeHandler(webapp2.RequestHandler):
             return;
         getComments(self);
         getVenues(self);
+        getAttractions(self);
         #template_values.update({'venues':venues});
         #template_values.update({'comments':comments});
         template=jinja_environment.get_template('userHome.html');
@@ -321,6 +417,15 @@ class UserHomeHandler(webapp2.RequestHandler):
             self.redirect('/default');
             return;
         else:
+             #Check if Search, if so.. perform search
+            searchButton=self.request.get("searchButtonInput")
+            lat=self.request.get("searchLat");
+            lng=self.request.get("searchLng");
+            searchVal=self.request.get("searchVal");
+            if searchButton == 'ON':
+                search(self, searchVal,lat,lng);
+                self.redirect('/searchHome');
+                return;
             getComments(self);
             template_values.update({'comments':comments});
             template=jinja_environment.get_template('userHome.html');
@@ -342,6 +447,15 @@ class CreateVenueHandler(webapp2.RequestHandler):
         if logOutButton=='ON':
             loggedOut=checkLogOut(self);
             self.redirect('/default');
+            return;
+         #Check if Search, if so.. perform search
+        searchButton=self.request.get("searchButtonInput")
+        lat=self.request.get("searchLat");
+        lng=self.request.get("searchLng");
+        searchVal=self.request.get("searchVal");
+        if searchButton == 'ON':
+            search(self, searchVal,lat,lng);
+            self.redirect('/searchHome');
             return;
         venueCreationButton=self.request.get('venueCreationInputButton');
         if venueCreationButton=='ON':
@@ -378,6 +492,15 @@ class CreateAttractionHandler(webapp2.RequestHandler):
             loggedOut=checkLogOut(self);
             self.redirect('/default');
             return;
+         #Check if Search, if so.. perform search
+        searchButton=self.request.get("searchButtonInput")
+        lat=self.request.get("searchLat");
+        lng=self.request.get("searchLng");
+        searchVal=self.request.get("searchVal");
+        if searchButton == 'ON':
+            search(self, searchVal,lat,lng);
+            self.redirect('/searchHome');
+            return;
         createAttractionButton=self.request.get('createAttractionButton');
         if createAttractionButton=='ON':
             newAttractionName=self.request.get('attractionName');
@@ -404,6 +527,15 @@ class LoginHandler(webapp2.RequestHandler):
     def post(self):
         
         getLoginButton=self.request.get('loginButtonInput');
+         #Check if Search, if so.. perform search
+        searchButton=self.request.get("searchButtonInput")
+        lat=self.request.get("searchLat");
+        lng=self.request.get("searchLng");
+        searchVal=self.request.get("searchVal");
+        if searchButton == 'ON':
+            search(self, searchVal,lat,lng);
+            self.redirect('/searchHome');
+            return;
         if getLoginButton=='ON':
             session=get_current_session();
             userName=self.request.get('userNameLogin');
@@ -439,7 +571,15 @@ class RegisterHandler(webapp2.RequestHandler):
         self.response.out.write(template.render(template_values));    
     
     def post(self):
-        
+         #Check if Search, if so.. perform search
+        searchButton=self.request.get("searchButtonInput")
+        lat=self.request.get("searchLat");
+        lng=self.request.get("searchLng");
+        searchVal=self.request.get("searchVal");
+        if searchButton == 'ON':
+            search(self, searchVal,lat,lng);
+            self.redirect('/searchHome');
+            return;
         getRegisterButtonInput=self.request.get('registerButtonInput');
         if getRegisterButtonInput=='ON':
             newFirstName=self.request.get('firstNameRegister');
@@ -457,8 +597,22 @@ class RegisterHandler(webapp2.RequestHandler):
         else:
             self.redirect('/default');
         
-        
-        
+ #---------------------------------------------------------- 
+class SearchHandler(webapp2.RequestHandler):
+    def get(self):       
+        template=jinja_environment.get_template('searchHome.html');
+        self.response.out.write(template.render(template_values));
+    
+    def post(self):
+        searchButton=self.request.get("searchButtonInput")
+        lat=self.request.get("searchLat");
+        lng=self.request.get("searchLng");
+        searchVal=self.request.get("searchVal");
+        if searchButton == 'ON':
+            search(self, searchVal,lat,lng);
+            self.redirect('/searchHome');
+            return;        
+ #----------------------------------------------------------        
 def registerUser(fn,ln,un,e,p):
     
     env = os.getenv('SERVER_SOFTWARE');
@@ -529,11 +683,13 @@ def registerAttraction(an,pn,pID,ad):
     cursor=db.cursor();
     putRegisterAttractionDB='''
         insert into trektip.Attraction (attractionName,placeName,placeID,description)
-        values ('%s','%s','%s','%s');commit
+        values ('%s','%s','%s','%s');
     '''%(an,pn,pID,ad);
     #cursor.close();
     cursor.execute(putRegisterAttractionDB);
     cursor.close();
+    cursor=db.cursor();
+    cursor.execute('commit');
 
         
 #----------------------------------------------------------    
@@ -548,5 +704,6 @@ app = webapp2.WSGIApplication([
     ('/venueCreation', CreateVenueHandler),
     ('/login',LoginHandler),
     ('/register',RegisterHandler),
-    ('/attractionCreation',CreateAttractionHandler)
+    ('/attractionCreation',CreateAttractionHandler),
+    ('/searchHome', SearchHandler)
 ], debug=True)
