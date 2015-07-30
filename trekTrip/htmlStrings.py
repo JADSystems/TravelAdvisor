@@ -49,7 +49,7 @@ logOut='''
     <form method ="post" id="logOutForm"  >
         <input name="userName" type="hidden" value=" ">
         <input name="logOutButton" type="hidden" value=" ">
-        <button  onclick="logOut()">logOut</button>
+        <button id="searchButton" onclick="logOut()" class="searchButton">logOut</button>
     </form>
 '''
 

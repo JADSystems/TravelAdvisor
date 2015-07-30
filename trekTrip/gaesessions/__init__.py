@@ -17,7 +17,7 @@ from google.appengine.ext import db
 COOKIE_NAME_PREFIX = "DgU"  # identifies a cookie as being one used by gae-sessions (so you can set cookies too)
 COOKIE_PATH = "/"
 DEFAULT_COOKIE_ONLY_THRESH = 10240  # 10KB: GAE only allows ~16000B in HTTP header - leave ~6KB for other info
-DEFAULT_LIFETIME = datetime.timedelta(seconds=80) #originally days=7;
+DEFAULT_LIFETIME = datetime.timedelta(seconds=180) #originally days=7;
 
 # constants
 SID_LEN = 43  # timestamp (10 chars) + underscore + md5 (32 hex chars)

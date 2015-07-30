@@ -152,5 +152,24 @@ is being dumped for possible future use;
                   
                               i++;
                           }
+                          
+                          
+                          
+          /*var contentString = '<div id="content">'+
+                    '<div id="siteNotice">'+
+                    '</div>'+
+                    '<h1 id="firstHeading" class="firstHeading">My City {{testText}}</h1>'+
+                    '<div id="bodyContent">'+
+                    '<form method="post">'+
+                        '<input name="placeName1" type="hidden" value=" ">'+
+                        '<input name="placeButton1" type="hidden" value=" ">'+
+                        '<button  onclick="">placeReg</button>'+
+                    '</form>'+
+                    '</div>'+
+                    '</div>';
+                    
+                var infowindow = new google.maps.InfoWindow({
+                      content: contentString
+                  });*/
 
 '''

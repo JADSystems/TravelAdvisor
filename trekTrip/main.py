@@ -41,14 +41,16 @@ def search(web, searchval, searchlat, searchlng):
     for r in cursor.fetchall():
         resultSet.append(str(r))
         resultSet[n]=resultSet[n].translate(None,'''()@#,$\'''');
-        resultSet[n]=resultSet[n] + "<br />"; 
+        resultSet[n]=resultSet[n]; 
         n=n+1;
     
-    resultValues="";
-        
-    for i in range(len(resultSet)):
-        resultValues+=resultSet[i];
-    template_values.update({'searchResult':resultValues});
+    #resultValues="";
+    numberOfResults=len(resultSet);    
+    #for i in range(len(resultSet)):
+    #    resultValues+=resultSet[i];
+    template_values.update({'searchResult':resultSet,'lengthOfResults':numberOfResults});
+    getAllVenues(web);
+    #getAttractions(web);
     return;
     
 
@@ -224,6 +226,57 @@ def getVenues(web):
     
 #----------------------------------------------------------
 
+def getAllVenues(web):
+    global venues;
+    session=get_current_session();
+    userName=session.get('userName',' ');
+    env = os.getenv('SERVER_SOFTWARE');
+    if (env and env.startswith('Google App Engine/')):
+        # Connecting from App Engine
+        db = MySQLdb.connect(
+        unix_socket='/cloudsql/trektip:trektipsql',
+        user='root',passwd='TfReETO88zFyArUa65za');
+    else:
+        # Connecting from an external network.
+        # Make sure your network is whitelisted
+        db = MySQLdb.connect(
+        host='173.194.248.180',
+        port=3306,
+        user='root',
+        passwd='TfReETO88zFyArUa65za');
+    cursor=db.cursor();
+      
+    venueColumn=['ID','placeName','latitude','longitude','description'];
+    j=0;
+    venues={};
+    while j<len(venueColumn):
+        venues.update({venueColumn[j]:[]});
+        j=j+1;
+    
+    j=0;
+    while j<len(venueColumn):
+        getAllVenues='''
+        SELECT distinct p.%s
+        FROM trektip.Place p
+        where p.userName in 
+        (
+            select trektip.User.userName 
+            from trektip.User
+        );
+    '''%(venueColumn[j]);
+        cursor.execute(getAllVenues);
+        n=0;
+        for v in cursor.fetchall():
+            #venues+= str(v)+'<br/>';
+            venues.get(venueColumn[j]).append((str(v)).translate(None,'''()@#,$\''''));
+            #venues.get(venueColumn[j])[n].append(str(v));
+            #venues.get(venueColumn[j])[n]=venues.get(venueColumn[j])[n].translate(None,'''()@#,$\'''')
+            #n=n+1;
+        template_values.update({venueColumn[j]:venues.get(venueColumn[j])}); 
+        j=j+1;  
+    lengthOfPlaces=len(venues.get(venueColumn[0]));
+    template_values.update({'lengthOfPlaces':lengthOfPlaces});
+
 def getAttractions(web):
     global venues;
     session=get_current_session();
@@ -244,7 +297,7 @@ def getAttractions(web):
         passwd='TfReETO88zFyArUa65za');
     cursor=db.cursor();
       
-    attractionColumn=['ID','attractionName','placeID','description'];
+    attractionColumn=['ID','attractionName','placeName','placeID','description'];
     j=0;
     attractions={};
     while j<len(attractionColumn):
@@ -254,7 +307,7 @@ def getAttractions(web):
     j=0;
     while j<len(attractionColumn):
         getAllAttractions='''
-        SELECT  a.%s
+        SELECT   a.%s
         from trektip.Attraction a;
     '''%(attractionColumn[j]);
         cursor.execute(getAllAttractions);
@@ -300,7 +353,7 @@ class MainHandler(webapp2.RequestHandler):
         
         template_values.update({'firstName':'','lastName':'','loginForm':loginForm, 'homeLink':'/default'});
        
-            
+        getAllVenues(self);      
         template_values.update({'backgroundImg':defaultBackgroundImg});
         template=jinja_environment.get_template('default.html');
         #template=jinja_environment.get_template('mapTest.html');
@@ -339,7 +392,39 @@ class MainHandler(webapp2.RequestHandler):
         self.redirect('/userHome');
 i=0;
 
-#----------------------------------------------------------        
+#----------------------------------------------------------  
+
+
+class AboutHandler(webapp2.RequestHandler):
+    def get(self):
+        
+        
+        template_values.update({ 'homeLink':'/default'});
+       
+        
+        template_values.update({'backgroundImg':defaultBackgroundImg});
+        template=jinja_environment.get_template('about.html');
+
+        self.response.out.write(template.render(template_values));
+        
+  
+        
+    def post(self):
+        
+        #Check if Search, if so.. perform search
+        searchButton=self.request.get("searchButtonInput")
+        lat=self.request.get("searchLat");
+        lng=self.request.get("searchLng");
+        searchVal=self.request.get("searchVal");
+        if searchButton == 'ON':
+            search(self, searchVal,lat,lng);
+            self.redirect('/searchHome');
+            return;
+       
+        self.redirect('/userHome');
+i=0;
+
+#----------------------------------------------------------          
 class TestHandler(webapp2.RequestHandler):
     
     def get(self):
@@ -347,7 +432,7 @@ class TestHandler(webapp2.RequestHandler):
         if checkLogOut(self)==True:
             self.redirect('/default');
             return;
-            
+          
         template=jinja_environment.get_template('test.html');
         self.response.out.write(template.render(template_values));
     def post(self):
@@ -705,5 +790,6 @@ app = webapp2.WSGIApplication([
     ('/login',LoginHandler),
     ('/register',RegisterHandler),
     ('/attractionCreation',CreateAttractionHandler),
-    ('/searchHome', SearchHandler)
+    ('/searchHome', SearchHandler),
+    ('/about',AboutHandler)
 ], debug=True)

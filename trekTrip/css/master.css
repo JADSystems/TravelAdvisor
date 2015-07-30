@@ -12,6 +12,8 @@ body
 	/*color:rgb(193,191,191);*/
 
 }
+
+
 div
 {
     margin-top: 0px;
@@ -215,10 +217,13 @@ input.rounded:focus {
 .MasterFooter
 {
 	position: absolute;
-	right:35%;
-	bottom:0%;
+	width: 50%;
+	left: 25%;
+	top: 90%;
+	justify-content: center;
 	z-index:1;
 }
+
 
 .roundedSelect
 {
@@ -344,4 +349,14 @@ span.tab
 {
 	height:75%;
 }
-
+#about 
+{
+	font-size:150%;
+	padding-right:20%;
+	padding-left:20%;
+}
+#about p
+{
+	
+	text-align:left;
+}

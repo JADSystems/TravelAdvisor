@@ -23,19 +23,23 @@
 				var getattractionName=[];
 				var getattractionPlaceID=[];
 				var getattractionDescription=[];
+				var getattractionPlaceName=[];
 				
 				numberOfAttractions=Number({{lengthOfAttractions}});
 				{% for attractionid in attractionID %}
 					getattractionID.push('{{attractionid}}');
 				{% endfor %}
-				{% for pn in attractionattractionName %}
-					getattractionName.push('{{pn}}');
+				{% for aan in attractionattractionName %}
+					getattractionName.push('{{aan}}');
 				{% endfor %}
-				{% for lat in attractionplaceID %}
-					getattractionPlaceID.push('{{lat}}');
+				{% for pID in attractionplaceID %}
+					getattractionPlaceID.push('{{pID}}');
 				{% endfor %}
-				{% for long in attractiondescription %}
-					getattractionDescription.push('{{long}}');
+				{% for apName in attractionplaceName %}
+					getattractionPlaceName.push('{{apName}}');
+				{% endfor %}
+				{% for aDesc in attractiondescription %}
+					getattractionDescription.push('{{aDesc}}');
 				{% endfor %}
 				
 				numberOfPlaces=Number({{lengthOfPlaces}});
@@ -154,9 +158,11 @@
 					{
 						console.log(j);
 						console.log(getattractionPlaceID[j]+'=='+getPlaceID[i]);
-						if (getattractionPlaceID[j]==getPlaceID[i])
+						if (getPlaceName[i]===getattractionPlaceName[j])
 						{
-							console.log(getattractionPlaceID[j]+'=='+getPlaceID[i]);
+							//console.log(getattractionPlaceID[j]+'=='+getPlaceID[i]);
+							console.log(getattractionPlaceID[j]==getPlaceID[i]);
+							console.log(getattractionPlaceName[j]+'=='+getPlaceName[i]);
 							attName=attName+getattractionName[j]+'<br/><hr>';
 							console.log(attName);
 							attDesc=attDesc+getattractionDescription[j]+'<br/><hr>';

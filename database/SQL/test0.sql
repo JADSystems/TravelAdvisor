@@ -2,10 +2,31 @@ SELECT MAX(i.ID) FROM trektip.Information i;
 
 SELECT * FROM trektip.Information;
 
+commit;
 
-SELECT * FROM trektip.Place;
+select trektip.User.userName 
+    from trektip.User;
+    
+ SELECT * FROM trektip.Place;   
+ 
+SELECT * FROM trektip.Place
+where Place.userName in 
+(
+	select trektip.User.userName 
+    from trektip.User
+);
+
+SELECT * FROM trektip.Place p, trektip.Attraction a
+where p.placeName='SchoolBar'
+and a.placeName='SchoolBar';
 
 SELECT * FROM trektip.User;
+
+
+
+SELECT * FROM trektip.Attraction;
+SELECT distinct *
+        FROM trektip.Place p;
 
 commit;
 
@@ -34,7 +55,7 @@ SELECT distinct p.placeName, p.placeType,p.description
 FROM trektip.Place p, trektip.User u
 where p.userName='root';
 
-SELECT  a.placeName 
+SELECT  a.attractionName
 from trektip.Attraction a;
 
 
