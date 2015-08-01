@@ -64,9 +64,12 @@ def fetchCredentialsDB(web):
     userNameSession=session.get('userName',userName);
     if userNameSession=='' or userNameSession==' ' or userNameSession=='userName' or userNameSession==None:
         return False;
+    
     #if not (str(userNameSession).__contains__(userName)):
     #    return False;
     password=session.get('password',' ');
+    if password=='' or password==' ' or password=='password' or password==None:
+        return False;
     env = os.getenv('SERVER_SOFTWARE');
     if (env and env.startswith('Google App Engine/')):
         # Connecting from App Engine
@@ -207,7 +210,8 @@ def getVenues(web):
         getAllVenues='''
         SELECT distinct p.%s
         FROM trektip.Place p, trektip.User u
-        where p.userName='%s';
+        where p.userName='%s'
+        order by p.placeName;
     '''%(venueColumn[j],userName);
         cursor.execute(getAllVenues);
         n=0;
@@ -262,7 +266,8 @@ def getAllVenues(web):
         (
             select trektip.User.userName 
             from trektip.User
-        );
+        )
+        order by p.placeName;
     '''%(venueColumn[j]);
         cursor.execute(getAllVenues);
         n=0;
@@ -308,7 +313,8 @@ def getAttractions(web):
     while j<len(attractionColumn):
         getAllAttractions='''
         SELECT   a.%s
-        from trektip.Attraction a;
+        from trektip.Attraction a
+        order by a.placeName;
     '''%(attractionColumn[j]);
         cursor.execute(getAllAttractions);
         n=0;
@@ -353,7 +359,8 @@ class MainHandler(webapp2.RequestHandler):
         
         template_values.update({'firstName':'','lastName':'','loginForm':loginForm, 'homeLink':'/default'});
        
-        getAllVenues(self);      
+        getAllVenues(self);
+        getAttractions(self);      
         template_values.update({'backgroundImg':defaultBackgroundImg});
         template=jinja_environment.get_template('default.html');
         #template=jinja_environment.get_template('mapTest.html');

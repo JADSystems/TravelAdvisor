@@ -4,10 +4,13 @@ SELECT * FROM trektip.Information;
 
 commit;
 
+call search_loc(26.375954,-80.10717) ;
+
 select trektip.User.userName 
     from trektip.User;
     
- SELECT * FROM trektip.Place;   
+ SELECT * FROM trektip.Place
+ order by placeName;
  
 SELECT * FROM trektip.Place
 where Place.userName in 
@@ -39,8 +42,8 @@ insert into trektip.Attraction (attractionName,placeName,placeID,description)
 values ('%s','%s','%s','%s');
 
 insert into trektip.Attraction (attractionName,placeName,placeID,description)
-values ('JzzyParty','Blue Note','1L','This was Great jazz')
-where 
+values ('JzzyParty','Blue Note','1L','This was Great jazz');
+-- where 
 
 alter table trektip.Attraction
 add column description varchar(150);
